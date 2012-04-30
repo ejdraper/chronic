@@ -12,16 +12,16 @@ module Chronic
       if !@current_fortnight_start
         case pointer
         when :future
-          sunday_repeater = RepeaterDayName.new(:sunday)
-          sunday_repeater.start = @now
-          next_sunday_span = sunday_repeater.next(:future)
-          @current_fortnight_start = next_sunday_span.begin
+          day_name_repeater = RepeaterDayName.new(Chronic.start_of_week)
+          day_name_repeater.start = @now
+          next_week_span = day_name_repeater.next(:future)
+          @current_fortnight_start = next_week_span.begin
         when :past
-          sunday_repeater = RepeaterDayName.new(:sunday)
-          sunday_repeater.start = (@now + RepeaterDay::DAY_SECONDS)
-          2.times { sunday_repeater.next(:past) }
-          last_sunday_span = sunday_repeater.next(:past)
-          @current_fortnight_start = last_sunday_span.begin
+          day_name_repeater = RepeaterDayName.new(Chronic.start_of_week)
+          day_name_repeater.start = (@now + RepeaterDay::DAY_SECONDS)
+          2.times { day_name_repeater.next(:past) }
+          last_week_span = day_name_repeater.next(:past)
+          @current_fortnight_start = last_week_span.begin
         end
       else
         direction = pointer == :future ? 1 : -1
@@ -39,18 +39,18 @@ module Chronic
       case pointer
       when :future
         this_fortnight_start = Chronic.construct(@now.year, @now.month, @now.day, @now.hour) + RepeaterHour::HOUR_SECONDS
-        sunday_repeater = RepeaterDayName.new(:sunday)
-        sunday_repeater.start = @now
-        sunday_repeater.this(:future)
-        this_sunday_span = sunday_repeater.this(:future)
-        this_fortnight_end = this_sunday_span.begin
+        day_name_repeater = RepeaterDayName.new(Chronic.start_of_week)
+        day_name_repeater.start = @now
+        day_name_repeater.this(:future)
+        this_week_span = day_name_repeater.this(:future)
+        this_fortnight_end = this_week_span.begin
         Span.new(this_fortnight_start, this_fortnight_end)
       when :past
         this_fortnight_end = Chronic.construct(@now.year, @now.month, @now.day, @now.hour)
-        sunday_repeater = RepeaterDayName.new(:sunday)
-        sunday_repeater.start = @now
-        last_sunday_span = sunday_repeater.next(:past)
-        this_fortnight_start = last_sunday_span.begin
+        day_name_repeater = RepeaterDayName.new(Chronic.start_of_week)
+        day_name_repeater.start = @now
+        last_week_span = day_name_repeater.next(:past)
+        this_fortnight_start = last_week_span.begin
         Span.new(this_fortnight_start, this_fortnight_end)
       end
     end
