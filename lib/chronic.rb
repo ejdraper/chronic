@@ -59,11 +59,22 @@ module Chronic
     #
     # Returns a Time object.
     attr_accessor :now
+  
+    # The day to be considered the start of the week
+    #
+    # Examples:
+    #
+    #   Chronic.start_of_week
+    #     # => :sunday
+    #   Chronic.start_of_week = :monday
+    #     # => :monday
+    attr_accessor :start_of_week
   end
 
   self.debug = false
   self.time_class = Time
-  
+  self.start_of_week = :sunday
+
   autoload :Handler, 'chronic/handler'
   autoload :Handlers, 'chronic/handlers'
   autoload :MiniDate, 'chronic/mini_date'

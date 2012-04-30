@@ -4,6 +4,11 @@ class TestRepeaterWeek < TestCase
 
   def setup
     @now = Time.local(2006, 8, 16, 14, 0, 0, 0)
+    Chronic.start_of_week = :sunday
+  end
+
+  def test_default_start_of_week
+    assert_equal :sunday, Chronic.start_of_week
   end
 
   def test_next_future
@@ -58,5 +63,52 @@ class TestRepeaterWeek < TestCase
     assert_equal Time.local(2006, 9, 6, 14), offset_span.begin
     assert_equal Time.local(2006, 9, 6, 14, 0, 1), offset_span.end
   end
+  
+  def test_next_future_custom_week_start
+    Chronic.start_of_week = :monday
+    weeks = Chronic::RepeaterWeek.new(:week)
+    weeks.start = @now
 
+    next_week = weeks.next(:future)
+    assert_equal Time.local(2006, 8, 21), next_week.begin
+    assert_equal Time.local(2006, 8, 28), next_week.end
+
+    next_next_week = weeks.next(:future)
+    assert_equal Time.local(2006, 8, 28), next_next_week.begin
+    assert_equal Time.local(2006, 9, 4), next_next_week.end
+  end
+
+  def test_next_past_custom_week_start
+    Chronic.start_of_week = :monday
+    weeks = Chronic::RepeaterWeek.new(:week)
+    weeks.start = @now
+
+    last_week = weeks.next(:past)
+    assert_equal Time.local(2006, 8, 7), last_week.begin
+    assert_equal Time.local(2006, 8, 14), last_week.end
+
+    last_last_week = weeks.next(:past)
+    assert_equal Time.local(2006, 7, 31), last_last_week.begin
+    assert_equal Time.local(2006, 8, 7), last_last_week.end
+  end
+
+  def test_this_future_custom_week_start
+    Chronic.start_of_week = :monday
+    weeks = Chronic::RepeaterWeek.new(:week)
+    weeks.start = @now
+
+    this_week = weeks.this(:future)
+    assert_equal Time.local(2006, 8, 16, 15), this_week.begin
+    assert_equal Time.local(2006, 8, 21), this_week.end
+  end
+
+  def test_this_past_custom_week_start
+    Chronic.start_of_week = :monday
+    weeks = Chronic::RepeaterWeek.new(:week)
+    weeks.start = @now
+
+    this_week = weeks.this(:past)
+    assert_equal Time.local(2006, 8, 14, 0), this_week.begin
+    assert_equal Time.local(2006, 8, 16, 14), this_week.end
+  end
 end
